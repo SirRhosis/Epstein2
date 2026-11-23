@@ -11,7 +11,7 @@
   .choice-btn {
     background: #2a1055;
     color: #fff;
-    border: 2px solid var(--pink);
+    border: 2px solid var(--pink, #ff007f);
     padding: 0.3rem 0.7rem;
     border-radius: 6px;
     cursor: pointer;
@@ -21,11 +21,10 @@
     transition: 0.2s;
   }
   .choice-btn.selected {
-    background: var(--pink);
-    box-shadow: 0 0 8px var(--pink);
+    background: var(--pink, #ff007f);
+    box-shadow: 0 0 8px var(--pink, #ff007f);
   }
 
-  /* Style pour le Démineur 6x12 */
   .mine-container {
     overflow-x: auto;
     max-width: 100%;
@@ -42,7 +41,7 @@
     width: 36px;
     height: 36px;
     background: #2a1055;
-    border: 2px solid var(--neon);
+    border: 2px solid var(--neon, #00f0ff);
     border-radius: 6px;
     font-size: 0.9rem;
     font-weight: bold;
@@ -53,14 +52,8 @@
     user-select: none;
     transition: 0.1s;
   }
-  .mine-cell:hover {
-    background: #3b1675;
-  }
-  .mine-cell.revealed {
-    background: #111;
-    border-color: #444;
-    cursor: default;
-  }
+  .mine-cell:hover { background: #3b1675; }
+  .mine-cell.revealed { background: #111; border-color: #444; cursor: default; }
   .mine-cell.c1 { color: #00f0ff; }
   .mine-cell.c2 { color: #2ecc71; }
   .mine-cell.c3 { color: #e74c3c; }
@@ -73,9 +66,9 @@
   <h1>🕹️ Mini Arcade</h1>
   <p class="sub">Tente ta chance ou farme le Démineur !</p>
   <div style="margin-top: 1rem;">
-    <span>Crédits : <strong id="global-score" style="color: var(--neon);">100</strong> 🪙</span> | 
-    <a href="quarto.html" style="color: var(--pink); text-decoration: underline; margin-right: 10px;">🧩 Jouer au Quarto</a> | 
-    <a href="page2.html" style="color: var(--neon); text-decoration: underline;">📊 Mes stats</a>
+    <span>Crédits : <strong id="global-score" style="color: var(--neon, #00f0ff);">100</strong> 🪙</span> | 
+    <a href="quarto.html" style="color: var(--pink, #ff007f); text-decoration: underline; margin-right: 10px;">🧩 Jouer au Quarto</a> | 
+    <a href="page2.html" style="color: var(--neon, #00f0ff); text-decoration: underline;">📊 Mes stats & Succès</a>
   </div>
 </header>
 
@@ -188,14 +181,21 @@
         slot: { played: 0, wins: 0 },
         dice: { played: 0, wins: 0 },
         coin: { played: 0, wins: 0 },
-        quarto: { played: 0, wins: 0 }
+        quarto: { played: 0, wins: 0 },
+        achievements: { streak: false, fastMines: false, rich: false }
       };
       localStorage.setItem('arcade_stats', JSON.stringify(stats));
+    }
+    if (!stats.achievements) {
+      stats.achievements = { streak: false, fastMines: false, rich: false };
     }
     return stats;
   }
 
   function saveStats(stats) {
+    if (stats.score >= 500) {
+      stats.achievements.rich = true;
+    }
     localStorage.setItem('arcade_stats', JSON.stringify(stats));
     document.getElementById('global-score').textContent = stats.score;
   }
@@ -279,9 +279,9 @@
     });
   });
 
-  // Démineur
+  // Démineur avec chrono pour le succès "Démineur express" (< 1 min)
   const ROWS = 6, COLS = 12, MINES_COUNT = 12;
-  let board = [], gameOver = false, revealedCount = 0, halfReached = false;
+  let board = [], gameOver = false, revealedCount = 0, halfReached = false, startTime = null;
   const totalSafeCells = (ROWS * COLS) - MINES_COUNT;
 
   function initMinesweeper() {
@@ -289,6 +289,7 @@
     gridEl.innerHTML = '';
     document.getElementById('mine-status').textContent = "+15 🪙 à 50% | +30 🪙 si fini !";
     board = []; gameOver = false; revealedCount = 0; halfReached = false;
+    startTime = Date.now();
 
     for (let r = 0; r < ROWS; r++) {
       let row = [];
@@ -357,7 +358,13 @@
       document.getElementById('mine-status').textContent = "Moitié franchie ! +15 🪙";
     }
     if (revealedCount === totalSafeCells) {
-      gameOver = true; stats.score += 30; saveStats(stats);
+      gameOver = true;
+      let elapsedTime = (Date.now() - startTime) / 1000;
+      if (elapsedTime < 60) {
+        stats.achievements.fastMines = true;
+      }
+      stats.score += 30; 
+      saveStats(stats);
       document.getElementById('mine-status').textContent = "Victoire totale ! +30 🪙 🎉";
     }
   }

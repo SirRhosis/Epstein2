@@ -3,100 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Statistiques - Mini Arcade</title>
+<title>Mini Arcade - Statistiques & Succès</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  .stats-container {
-    max-width: 600px;
-    margin: 2rem auto;
-    background: linear-gradient(160deg, #1f1035, #0d0618);
-    border: 3px solid var(--pink);
-    border-radius: 18px;
-    padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 0, 127, 0.3);
-  }
-  .stats-container h2 { color: var(--neon); text-shadow: 0 0 8px var(--neon); margin-top: 0; }
-  .stat-item {
-    background: rgba(0, 0, 0, 0.3);
-    margin: 1rem 0;
-    padding: 1rem;
-    border-radius: 10px;
-    border-left: 4px solid var(--neon);
-  }
-  .back-btn {
-    display: inline-block;
-    margin-top: 1.5rem;
-    padding: 0.8rem 1.5rem;
-    background: var(--neon);
-    color: #000;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 999px;
-    box-shadow: 0 0 10px var(--neon);
-  }
+  body { text-align: center; font-family: sans-serif; color: #fff; background: #0f051d; padding: 2rem; }
+  .stats-container { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 1.5rem 0; }
+  .stat-item { background: #2a1055; border: 2px solid var(--neon, #00f0ff); padding: 1rem; border-radius: 8px; width: 180px; }
+  
+  .achievements-container { max-width: 600px; margin: 2rem auto; text-align: left; background: #1a0833; border: 2px solid var(--pink, #ff007f); padding: 1.5rem; border-radius: 12px; }
+  .achievement { display: flex; align-items: center; justify-content: space-between; background: #2a1055; padding: 0.8rem; margin: 0.5rem 0; border-radius: 6px; border: 1px solid #444; }
+  .achievement.unlocked { border-color: #2ecc71; background: #102d1d; }
+  .achievement span { font-size: 0.9rem; }
+  
+  .btn { background: #ff007f; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 1rem; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>📊 Tableau des Statistiques</h1>
-  <p class="sub">Retrouve ici tes performances et ton score global.</p>
-</header>
+  <h1>📊 Tableau des Statistiques & Succès</h1>
+  <p>Crédits totaux : <strong id="total-score" style="color: var(--neon, #00f0ff);">100</strong> 🪙</p>
 
-<main>
+  <!-- STATISTIQUES DES JEUX -->
   <div class="stats-container">
-    <h2>Score Total : <span id="total-score">0</span> points</h2>
-    
     <div class="stat-item">
-      <h3>🎡 Roue de la fortune</h3>
-      <p>Parties jouées : <span id="wheel-played">0</span></p>
+      <h3>🎡 Roue</h3>
+      <p>Jouées : <span id="wheel-played">0</span></p>
       <p>Victoires : <span id="wheel-wins">0</span></p>
     </div>
-
     <div class="stat-item">
-      <h3>🚀 Machine à surprises</h3>
-      <p>Parties jouées : <span id="slot-played">0</span></p>
+      <h3>🎰 Surprise</h3>
+      <p>Jouées : <span id="slot-played">0</span></p>
       <p>Victoires : <span id="slot-wins">0</span></p>
     </div>
-
     <div class="stat-item">
       <h3>🎲 Dés</h3>
-      <p>Parties jouées : <span id="dice-played">0</span></p>
+      <p>Jouées : <span id="dice-played">0</span></p>
       <p>Victoires : <span id="dice-wins">0</span></p>
     </div>
-
     <div class="stat-item">
-      <h3>🪙 Pile ou face</h3>
-      <p>Parties jouées : <span id="coin-played">0</span></p>
+      <h3>🪙 Pile/Face</h3>
+      <p>Jouées : <span id="coin-played">0</span></p>
       <p>Victoires : <span id="coin-wins">0</span></p>
     </div>
-
-    <a href="index.html" class="back-btn">← Retour aux jeux</a>
+    <div class="stat-item">
+      <h3>🧩 Quarto</h3>
+      <p>Jouées : <span id="quarto-played">0</span></p>
+      <p>Victoires : <span id="quarto-wins">0</span></p>
+    </div>
   </div>
-</main>
+
+  <!-- SECTION DES SUCCÈS -->
+  <div class="achievements-container">
+    <h2>🏆 Succès & Défis</h2>
+    <div class="achievement" id="ach-streak">
+      <span>🔥 <strong>Série gagnante</strong> : Gagner 5 fois d'affilée</span>
+      <span id="status-streak">❌ Verrouillé</span>
+    </div>
+    <div class="achievement" id="ach-mines">
+      <span>⚡ <strong>Démineur express</strong> : Terminer le Démineur en moins d'une minute</span>
+      <span id="status-mines">❌ Verrouillé</span>
+    </div>
+    <div class="achievement" id="ach-rich">
+      <span>💰 <strong>Millionnaire</strong> : Atteindre un total de 500 crédits</span>
+      <span id="status-rich">❌ Verrouillé</span>
+    </div>
+  </div>
+
+  <a href="index.html" class="btn">⬅️ Retour à l'accueil</a>
 
 <script>
-  const stats = JSON.parse(localStorage.getItem('arcade_stats')) || {
-    score: 0,
+  let stats = JSON.parse(localStorage.getItem('arcade_stats')) || {
+    score: 100,
     wheel: { played: 0, wins: 0 },
     slot: { played: 0, wins: 0 },
     dice: { played: 0, wins: 0 },
-    coin: { played: 0, wins: 0 }
+    coin: { played: 0, wins: 0 },
+    quarto: { played: 0, wins: 0 },
+    achievements: { streak: false, fastMines: false, rich: false }
   };
+
+  if (!stats.achievements) {
+    stats.achievements = { streak: false, fastMines: false, rich: false };
+  }
+  if (!stats.quarto) {
+    stats.quarto = { played: 0, wins: 0 };
+  }
 
   document.getElementById('total-score').textContent = stats.score;
 
-  document.getElementById('wheel-played').textContent = stats.wheel.played;
-  document.getElementById('wheel-wins').textContent = stats.wheel.wins;
+  const games = ['wheel', 'slot', 'dice', 'coin', 'quarto'];
+  games.forEach(g => {
+    if (stats[g]) {
+      document.getElementById(`${g}-played`).textContent = stats[g].played;
+      document.getElementById(`${g}-wins`).textContent = stats[g].wins;
+    }
+  });
 
-  document.getElementById('slot-played').textContent = stats.slot.played;
-  document.getElementById('slot-wins').textContent = stats.slot.wins;
+  if (stats.score >= 500) {
+    stats.achievements.rich = true;
+    localStorage.setItem('arcade_stats', JSON.stringify(stats));
+  }
 
-  document.getElementById('dice-played').textContent = stats.dice.played;
-  document.getElementById('dice-wins').textContent = stats.dice.wins;
-
-  document.getElementById('coin-played').textContent = stats.coin.played;
-  document.getElementById('coin-wins').textContent = stats.coin.wins;
+  if (stats.achievements.rich) {
+    document.getElementById('ach-rich').classList.add('unlocked');
+    document.getElementById('status-rich').textContent = '✅ Débloqué';
+  }
+  if (stats.achievements.streak) {
+    document.getElementById('ach-streak').classList.add('unlocked');
+    document.getElementById('status-streak').textContent = '✅ Débloqué';
+  }
+  if (stats.achievements.fastMines) {
+    document.getElementById('ach-mines').classList.add('unlocked');
+    document.getElementById('status-mines').textContent = '✅ Débloqué';
+  }
 </script>
 
 </body>

@@ -15,14 +15,12 @@
   .piece-btn { width: 55px; height: 55px; background: #1a0833; border: 2px solid #ff007f; border-radius: 8px; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
   .piece-btn:hover { background: #331259; transform: scale(1.05); }
 
-  /* Design visuel des pièces du Quarto */
   .piece-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
   }
-  /* Attributs visuels dynamiques */
   .tall { width: 38px; height: 38px; }
   .short { width: 24px; height: 24px; }
   
@@ -62,7 +60,7 @@
   function getStats() {
     let stats = JSON.parse(localStorage.getItem('arcade_stats'));
     if (!stats) {
-      stats = { score: 100, quarto: { played: 0, wins: 0 } };
+      stats = { score: 100, quarto: { played: 0, wins: 0 }, achievements: { streak: false, fastMines: false, rich: false } };
       localStorage.setItem('arcade_stats', JSON.stringify(stats));
     }
     if (!stats.quarto) stats.quarto = { played: 0, wins: 0 };
@@ -116,20 +114,17 @@
     updateUIStatus(`Le Bot te donne cette pièce. Place-la sur la grille !`, currentPieceToPlace);
   }
 
-  // Crée un élément HTML visuel pour représenter une pièce selon ses 4 bits
   function createPieceElement(p) {
     if (p === null) return null;
     const el = document.createElement('div');
     el.className = 'piece-icon';
 
-    let tall = (p & 8) ? 'tall' : 'short';     // Grand ou Petit
-    let solid = (p & 4) ? 'solid' : 'hollow';   // Plein ou Creux
-    let color = (p & 2) ? 'light' : 'dark';     // Cyan ou Rose
-    let shape = (p & 1) ? 'circle' : 'square';  // Rond ou Carré
+    let tall = (p & 8) ? 'tall' : 'short';
+    let solid = (p & 4) ? 'solid' : 'hollow';
+    let color = (p & 2) ? 'light' : 'dark';
+    let shape = (p & 1) ? 'circle' : 'square';
 
     el.classList.add(tall, shape, `${solid}-${color}`);
-    
-    // Description textuelle au survol pour aider
     let desc = `${(p & 8)?'Grand':'Petit'}, ${(p & 4)?'Plein':'Creux'}, ${(p & 2)?'Clair':'Sombre'}, ${(p & 1)?'Rond':'Carré'}`;
     el.title = desc;
 
