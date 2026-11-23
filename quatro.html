@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vrai Quarto Express - Visuel</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { text-align: center; font-family: sans-serif; color: #fff; background: #0f051d; padding: 1rem; }
+  .quarto-grid { display: grid; grid-template-columns: repeat(4, 70px); gap: 8px; justify-content: center; margin: 1rem auto; }
+  .quarto-cell { width: 70px; height: 70px; background: #2a1055; border: 2px solid #00f0ff; border-radius: 8px; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
+  .quarto-cell:hover { background: #3b1675; }
+  
+  .pieces-pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 360px; margin: 1rem auto; }
+  .piece-btn { width: 55px; height: 55px; background: #1a0833; border: 2px solid #ff007f; border-radius: 8px; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
+  .piece-btn:hover { background: #331259; transform: scale(1.05); }
+
+  /* Design visuel des pièces du Quarto */
+  .piece-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  /* Attributs visuels dynamiques */
+  .tall { width: 38px; height: 38px; }
+  .short { width: 24px; height: 24px; }
+  
+  .square { border-radius: 4px !important; }
+  .circle { border-radius: 50% !important; }
+  
+  .solid-light { background: #00f0ff; }
+  .hollow-light { border: 3px solid #00f0ff; background: transparent; }
+  
+  .solid-dark { background: #ff007f; }
+  .hollow-dark { border: 3px solid #ff007f; background: transparent; }
+
+  .btn { background: #ff007f; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+
+  <h1>🧩 Vrai Quarto Express (Visuel)</h1>
+  <p>Crédits : <strong id="global-score" style="color: #00f0ff;">100</strong> 🪙</p>
+  <p id="quarto-status">Chargement de la partie...</p>
+
+  <div id="selection-area" style="display:none;">
+    <p>Choisis une pièce visuelle à donner au Bot :</p>
+    <div class="pieces-pool" id="pool"></div>
+  </div>
+
+  <div class="quarto-grid" id="quarto-grid"></div>
+
+  <button class="btn" id="reset-quarto">🔄 Nouvelle Partie (-10 🪙)</button>
+  <br><br>
+  <a href="index.html" style="color: #00f0ff; text-decoration: underline;">⬅️ Retour à l'accueil</a>
+
+<script>
+  const COST = 10;
+  const REWARD = 30;
+
+  function getStats() {
+    let stats = JSON.parse(localStorage.getItem('arcade_stats'));
+    if (!stats) {
+      stats = { score: 100, quarto: { played: 0, wins: 0 } };
+      localStorage.setItem('arcade_stats', JSON.stringify(stats));
+    }
+    if (!stats.quarto) stats.quarto = { played: 0, wins: 0 };
+    return stats;
+  }
+
+  function saveStats(stats) {
+    localStorage.setItem('arcade_stats', JSON.stringify(stats));
+    document.getElementById('global-score').textContent = stats.score;
+  }
+
+  document.getElementById('global-score').textContent = getStats().score;
+
+  let board = [];
+  let availablePieces = [];
+  let currentPieceToPlace = null;
+  let gamePhase = 'place';
+  let gameOver = false;
+
+  function initQuarto() {
+    const gridEl = document.getElementById('quarto-grid');
+    gridEl.innerHTML = '';
+    board = Array(16).fill(null);
+    gameOver = false;
+    
+    availablePieces = [];
+    for (let i = 0; i < 16; i++) availablePieces.push(i);
+
+    let stats = getStats();
+    if (stats.score < COST) {
+      document.getElementById('quarto-status').textContent = "Pas assez de crédits ! Va farmer le Démineur sur l'accueil.";
+      return;
+    }
+
+    stats.score -= COST;
+    stats.quarto.played += 1;
+    saveStats(stats);
+
+    for (let i = 0; i < 16; i++) {
+      const cell = document.createElement('button');
+      cell.className = 'quarto-cell';
+      cell.dataset.index = i;
+      cell.addEventListener('click', () => handleCellClick(i));
+      gridEl.appendChild(cell);
+    }
+
+    let firstPieceIndex = Math.floor(Math.random() * availablePieces.length);
+    currentPieceToPlace = availablePieces.splice(firstPieceIndex, 1)[0];
+
+    gamePhase = 'place';
+    updateUIStatus(`Le Bot te donne cette pièce. Place-la sur la grille !`, currentPieceToPlace);
+  }
+
+  // Crée un élément HTML visuel pour représenter une pièce selon ses 4 bits
+  function createPieceElement(p) {
+    if (p === null) return null;
+    const el = document.createElement('div');
+    el.className = 'piece-icon';
+
+    let tall = (p & 8) ? 'tall' : 'short';     // Grand ou Petit
+    let solid = (p & 4) ? 'solid' : 'hollow';   // Plein ou Creux
+    let color = (p & 2) ? 'light' : 'dark';     // Cyan ou Rose
+    let shape = (p & 1) ? 'circle' : 'square';  // Rond ou Carré
+
+    el.classList.add(tall, shape, `${solid}-${color}`);
+    
+    // Description textuelle au survol pour aider
+    let desc = `${(p & 8)?'Grand':'Petit'}, ${(p & 4)?'Plein':'Creux'}, ${(p & 2)?'Clair':'Sombre'}, ${(p & 1)?'Rond':'Carré'}`;
+    el.title = desc;
+
+    return el;
+  }
+
+  function updateUIStatus(text, pieceVal) {
+    const statusEl = document.getElementById('quarto-status');
+    statusEl.innerHTML = text;
+    if (pieceVal !== undefined && pieceVal !== null) {
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'inline-flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.marginLeft = '10px';
+      wrapper.style.verticalAlign = 'middle';
+      wrapper.appendChild(createPieceElement(pieceVal));
+      statusEl.appendChild(wrapper);
+    }
+  }
+
+  function handleCellClick(index) {
+    if (gameOver || gamePhase !== 'place' || board[index] !== null) return;
+
+    board[index] = currentPieceToPlace;
+    currentPieceToPlace = null;
+    updateBoardUI();
+
+    if (checkWin()) {
+      endGame(true, "Victoire ! Tu as aligné 4 pièces partageant un attribut ! 🎉");
+      return;
+    }
+
+    if (availablePieces.length === 0 || board.every(c => c !== null)) {
+      endGame(false, "Match nul ! Grille pleine.");
+      return;
+    }
+
+    gamePhase = 'choose';
+    document.getElementById('selection-area').style.display = 'block';
+    document.getElementById('quarto-status').textContent = "À ton tour : choisis une pièce visuelle ci-dessous à donner au Bot.";
+    renderPool();
+  }
+
+  function renderPool() {
+    const poolEl = document.getElementById('pool');
+    poolEl.innerHTML = '';
+    availablePieces.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'piece-btn';
+      btn.appendChild(createPieceElement(p));
+      btn.addEventListener('click', () => playerChoosePieceForBot(p));
+      poolEl.appendChild(btn);
+    });
+  }
+
+  function playerChoosePieceForBot(piece) {
+    availablePieces = availablePieces.filter(p => p !== piece);
+    document.getElementById('selection-area').style.display = 'none';
+
+    updateUIStatus("Tu as donné cette pièce au Bot. Il réfléchit...", piece);
+
+    setTimeout(() => botTurn(piece), 800);
+  }
+
+  function botTurn(pieceToPlace) {
+    if (gameOver) return;
+
+    let emptyCells = [];
+    for (let i = 0; i < 16; i++) {
+      if (board[i] === null) emptyCells.push(i);
+    }
+
+    if (emptyCells.length === 0) return;
+
+    let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    board[randomCell] = pieceToPlace;
+    updateBoardUI();
+
+    if (checkWin()) {
+      endGame(false, "Le Bot a gagné en alignant 4 pièces ! Dommage...");
+      return;
+    }
+
+    if (availablePieces.length === 0 || board.every(c => c !== null)) {
+      endGame(false, "Match nul ! Grille pleine.");
+      return;
+    }
+
+    let randomPieceIndex = Math.floor(Math.random() * availablePieces.length);
+    currentPieceToPlace = availablePieces.splice(randomPieceIndex, 1)[0];
+
+    gamePhase = 'place';
+    updateUIStatus("Le Bot te donne cette pièce. Place-la !", currentPieceToPlace);
+  }
+
+  function checkLine(p1, p2, p3, p4) {
+    if (p1 === null || p2 === null || p3 === null || p4 === null) return false;
+    return ((p1 & p2 & p3 & p4) !== 0) || (((~p1) & (~p2) & (~p3) & (~p4) & 15) !== 0);
+  }
+
+  function checkWin() {
+    for (let r = 0; r < 4; r++) {
+      if (checkLine(board[r*4], board[r*4+1], board[r*4+2], board[r*4+3])) return true;
+    }
+    for (let c = 0; c < 4; c++) {
+      if (checkLine(board[c], board[c+4], board[c+8], board[c+12])) return true;
+    }
+    if (checkLine(board[0], board[5], board[10], board[15])) return true;
+    if (checkLine(board[3], board[6], board[9], board[12])) return true;
+    return false;
+  }
+
+  function updateBoardUI() {
+    for (let i = 0; i < 16; i++) {
+      const cell = document.querySelector(`[data-index='${i}']`);
+      cell.innerHTML = "";
+      if (board[i] !== null) {
+        cell.appendChild(createPieceElement(board[i]));
+      }
+    }
+  }
+
+  function endGame(isWin, message) {
+    gameOver = true;
+    document.getElementById('selection-area').style.display = 'none';
+    document.getElementById('quarto-status').textContent = message;
+    let stats = getStats();
+    if (isWin) {
+      stats.quarto.wins += 1;
+      stats.score += REWARD;
+      saveStats(stats);
+    }
+  }
+
+  document.getElementById('reset-quarto').addEventListener('click', initQuarto);
+  initQuarto();
+</script>
+
+</body>
+</html>

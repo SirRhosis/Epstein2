@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Arcade</title>
+<title>Mini Arcade - Accueil</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  /* Petits styles pour les boutons de choix */
   .choices { margin-bottom: 0.8rem; }
   .choices p { margin: 0 0 0.4rem; font-size: 0.85rem; }
   .choice-btn {
@@ -25,80 +24,87 @@
     background: var(--pink);
     box-shadow: 0 0 8px var(--pink);
   }
+
+  /* Style pour le Démineur 6x12 */
+  .mine-container {
+    overflow-x: auto;
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+  .mine-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 36px);
+    grid-template-rows: repeat(6, 36px);
+    gap: 4px;
+    justify-content: center;
+  }
+  .mine-cell {
+    width: 36px;
+    height: 36px;
+    background: #2a1055;
+    border: 2px solid var(--neon);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    user-select: none;
+    transition: 0.1s;
+  }
+  .mine-cell:hover {
+    background: #3b1675;
+  }
+  .mine-cell.revealed {
+    background: #111;
+    border-color: #444;
+    cursor: default;
+  }
+  .mine-cell.c1 { color: #00f0ff; }
+  .mine-cell.c2 { color: #2ecc71; }
+  .mine-cell.c3 { color: #e74c3c; }
+  .mine-cell.c4 { color: #9b59b6; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🕹️ Mini Arcade</h1>
-  <p class="sub">Fais ton pronostic, lance, puis arrête pour tenter de gagner des points !</p>
+  <p class="sub">Tente ta chance ou farme le Démineur !</p>
   <div style="margin-top: 1rem;">
-    <span>Score : <strong id="global-score">0</strong> pts</span> | 
-    <a href="page2.html" style="color: var(--neon); text-decoration: underline;">Voir mes stats 📊</a>
+    <span>Crédits : <strong id="global-score" style="color: var(--neon);">100</strong> 🪙</span> | 
+    <a href="quarto.html" style="color: var(--pink); text-decoration: underline; margin-right: 10px;">🧩 Jouer au Quarto</a> | 
+    <a href="page2.html" style="color: var(--neon); text-decoration: underline;">📊 Mes stats</a>
   </div>
 </header>
 
 <main class="grid">
 
-  <!-- ================= MACHINE À SYMBOLES ================= -->
-  <section class="game" data-game="slot">
-    <h2>Machine à surprises</h2>
-    <div class="stage">
-      <div class="reels">
-        <div class="reel"><div class="strip s1 anim">
-          <span>🚀</span><span>👾</span><span>⭐</span><span>⚡</span><span>🔥</span><span>💎</span><span>🚀</span><span>👾</span>
-        </div></div>
-        <div class="reel"><div class="strip s2 anim">
-          <span>👾</span><span>⭐</span><span>💎</span><span>🚀</span><span>🔥</span><span>⚡</span><span>👾</span><span>⭐</span>
-        </div></div>
-        <div class="reel"><div class="strip s3 anim">
-          <span>⚡</span><span>🚀</span><span>👾</span><span>💎</span><span>⭐</span><span>🔥</span><span>⚡</span><span>🚀</span>
-        </div></div>
-      </div>
-    </div>
-    <button class="hold" type="button">🚀 LANCER / ARRÊTER</button>
-    <p class="hint">Aligne 3 symboles sur la ligne néon pour gagner !</p>
-  </section>
-
-  <!-- ================= ROUE DE LA FORTUNE ================= -->
-  <section class="game" data-game="wheel">
-    <h2>Roue de la fortune</h2>
-    <div class="stage">
-      <div class="wheel-wrap">
-        <div class="pointer"></div>
-        <div class="wheel anim">
-          <span class="n" style="--i:0">0</span>
-          <span class="n" style="--i:1">1</span>
-          <span class="n" style="--i:2">2</span>
-          <span class="n" style="--i:3">3</span>
-          <span class="n" style="--i:4">4</span>
-          <span class="n" style="--i:5">5</span>
-          <span class="n" style="--i:6">6</span>
-          <span class="n" style="--i:7">7</span>
-          <span class="n" style="--i:8">8</span>
-          <span class="n" style="--i:9">9</span>
-          <span class="n" style="--i:10">10</span>
-          <span class="n" style="--i:11">11</span>
-          <span class="n" style="--i:12">12</span>
+  <!-- PILE OU FACE -->
+  <section class="game" data-game="coin">
+    <h2>Pile ou face</h2>
+    <div class="stage" style="min-height: 200px;">
+      <div class="coin-stage">
+        <div class="coin anim">
+          <div class="side">PILE</div>
+          <div class="side verso">FACE</div>
         </div>
       </div>
     </div>
-    
-    <div class="choices" data-game-choices="wheel">
-      <p>Choisis une couleur :</p>
-      <button type="button" class="choice-btn" data-val="bleu">Bleu</button>
-      <button type="button" class="choice-btn" data-val="violet">Violet</button>
-      <button type="button" class="choice-btn" data-val="noir">Noir</button>
+    <div class="choices" data-game-choices="coin">
+      <p>Pronostic (Coût: 5 🪙 | Gain: 8 🪙) :</p>
+      <button type="button" class="choice-btn" data-val="pile">Pile</button>
+      <button type="button" class="choice-btn" data-val="face">Face</button>
     </div>
-
-    <button class="hold" type="button">🎡 LANCER / ARRÊTER</button>
-    <p class="hint">Le numéro sous la flèche néon est ton score.</p>
+    <button class="hold" type="button">🪙 LANCER / ARRÊTER (-5 🪙)</button>
+    <p class="hint">50% de chance.</p>
   </section>
 
-  <!-- ================= DÉS ================= -->
+  <!-- DÉS -->
   <section class="game" data-game="dice">
     <h2>Dés</h2>
-    <div class="stage">
+    <div class="stage" style="min-height: 200px;">
       <div class="dice">
         <div class="die"><div class="rx a1 anim"><div class="ry b1 anim">
           <div class="face f1"></div><div class="face f2"></div><div class="face f3"></div>
@@ -110,54 +116,81 @@
         </div></div></div>
       </div>
     </div>
-
     <div class="choices" data-game-choices="dice">
-      <p>La somme sera :</p>
+      <p>Somme (Coût: 5 🪙 | Gain: 8 🪙) :</p>
       <button type="button" class="choice-btn" data-val="pair">Pair</button>
       <button type="button" class="choice-btn" data-val="impair">Impair</button>
     </div>
-
-    <button class="hold" type="button">🎲 LANCER / ARRÊTER</button>
-    <p class="hint">Additionne les deux faces du dessus.</p>
+    <button class="hold" type="button">🎲 LANCER / ARRÊTER (-5 🪙)</button>
+    <p class="hint">50% de chance.</p>
   </section>
 
-  <!-- ================= PILE OU FACE ================= -->
-  <section class="game" data-game="coin">
-    <h2>Pile ou face</h2>
+  <!-- ROUE DE LA FORTUNE -->
+  <section class="game" data-game="wheel">
+    <h2>Roue de la fortune</h2>
     <div class="stage">
-      <div class="coin-stage">
-        <div class="coin anim">
-          <div class="side">PILE</div>
-          <div class="side verso">FACE</div>
+      <div class="wheel-wrap">
+        <div class="pointer"></div>
+        <div class="wheel anim">
+          <span class="n" style="--i:0">0</span><span class="n" style="--i:1">1</span><span class="n" style="--i:2">2</span><span class="n" style="--i:3">3</span><span class="n" style="--i:4">4</span><span class="n" style="--i:5">5</span><span class="n" style="--i:6">6</span><span class="n" style="--i:7">7</span><span class="n" style="--i:8">8</span><span class="n" style="--i:9">9</span><span class="n" style="--i:10">10</span><span class="n" style="--i:11">11</span><span class="n" style="--i:12">12</span>
         </div>
       </div>
     </div>
-
-    <div class="choices" data-game-choices="coin">
-      <p>Ton pronostic :</p>
-      <button type="button" class="choice-btn" data-val="pile">Pile</button>
-      <button type="button" class="choice-btn" data-val="face">Face</button>
+    <div class="choices" data-game-choices="wheel">
+      <p>Couleur (Coût: 10 🪙) :</p>
+      <button type="button" class="choice-btn" data-val="bleu">Bleu (60 🪙)</button>
+      <button type="button" class="choice-btn" data-val="violet">Violet (15 🪙)</button>
+      <button type="button" class="choice-btn" data-val="noir">Noir (15 🪙)</button>
     </div>
+    <button class="hold" type="button">🎡 LANCER / ARRÊTER (-10 🪙)</button>
+    <p class="hint">Le bleu est rare !</p>
+  </section>
 
-    <button class="hold" type="button">🪙 LANCER / ARRÊTER</button>
-    <p class="hint">Clique à nouveau pour voir ton résultat.</p>
+  <!-- MACHINE À SURPRISES -->
+  <section class="game" data-game="slot">
+    <h2>Machine à surprises</h2>
+    <div class="stage">
+      <div class="reels">
+        <div class="reel"><div class="strip s1 anim"><span>🚀</span><span>👾</span><span>⭐</span><span>⚡</span><span>🔥</span><span>💎</span><span>🚀</span><span>👾</span></div></div>
+        <div class="reel"><div class="strip s2 anim"><span>👾</span><span>⭐</span><span>💎</span><span>🚀</span><span>🔥</span><span>⚡</span><span>👾</span><span>⭐</span></div></div>
+        <div class="reel"><div class="strip s3 anim"><span>⚡</span><span>🚀</span><span>👾</span><span>💎</span><span>⭐</span><span>🔥</span><span>⚡</span><span>🚀</span></div></div>
+      </div>
+    </div>
+    <button class="hold" type="button" style="margin-top: 2.8rem;">🚀 LANCER (-20 🪙)</button>
+    <p class="hint" style="margin-top: 1.2rem;">Jackpot: 80 🪙</p>
+  </section>
+
+  <!-- DÉMINEUR 6x12 -->
+  <section class="game" style="grid-column: 1 / -1; max-width: 700px; margin: 0 auto; width: 100%;">
+    <h2>💣 Vrai Démineur de Secours (6x12)</h2>
+    <p id="mine-status" style="margin: 0.5rem 0; font-size: 0.9rem;">+15 🪙 à 50% | +30 🪙 si fini !</p>
+    <div class="mine-container">
+      <div class="mine-grid" id="mine-grid"></div>
+    </div>
+    <button class="hold" type="button" id="reset-mines" style="background: linear-gradient(#00f0ff, #0077ff 50%, #002266); box-shadow: 0 5px 0 #002266, 0 8px 12px rgba(0, 0, 0, 0.4); margin-top: 0.5rem;">🔄 Nouvelle Partie</button>
   </section>
 
 </main>
 
-<footer>Mini-jeux HTML, CSS et JS.</footer>
-
 <script>
+  const GAME_CONFIG = {
+    coin: { cost: 5, reward: 8 },
+    dice: { cost: 5, reward: 8 },  
+    slot: { cost: 20, reward: 80 }
+  };
+
   function getStats() {
     let stats = JSON.parse(localStorage.getItem('arcade_stats'));
-    if (!stats) {
+    if (!stats || typeof stats.score !== 'number') {
       stats = {
-        score: 0,
+        score: 100,
         wheel: { played: 0, wins: 0 },
         slot: { played: 0, wins: 0 },
         dice: { played: 0, wins: 0 },
-        coin: { played: 0, wins: 0 }
+        coin: { played: 0, wins: 0 },
+        quarto: { played: 0, wins: 0 }
       };
+      localStorage.setItem('arcade_stats', JSON.stringify(stats));
     }
     return stats;
   }
@@ -169,7 +202,6 @@
 
   document.getElementById('global-score').textContent = getStats().score;
 
-  // Gestion des sélections de choix pour chaque jeu
   const userChoices = {};
   document.querySelectorAll('.choices').forEach(container => {
     const gameType = container.getAttribute('data-game-choices');
@@ -182,70 +214,156 @@
     });
   });
 
-  // Gestion des clics sur les jeux
-  document.querySelectorAll('.game').forEach(game => {
+  document.querySelectorAll('.game[data-game]').forEach(game => {
     const button = game.querySelector('.hold');
     const gameName = game.getAttribute('data-game');
 
     button.addEventListener('click', () => {
       if (game.classList.contains('stopping')) return;
+      let stats = getStats();
 
       if (game.classList.contains('playing')) {
-        // --- ARRÊT DU JEU ET VÉRIFICATION ---
         game.classList.remove('playing');
         game.classList.add('stopping');
 
-        let stats = getStats();
         let playerChoice = userChoices[gameName];
         let isWin = false;
+        let rewardEarned = 0;
 
         if (!playerChoice && gameName !== 'slot') {
-          alert("N'oublie pas de faire ton choix avant d'arrêter le jeu !");
+          alert("Fais ton choix avant d'arrêter !");
         } else {
-          // On incrémente le nombre de parties jouées
           stats[gameName].played += 1;
 
-          // Logique de résultat selon le jeu
           if (gameName === 'wheel') {
             const colors = ['bleu', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir'];
             const winningColor = colors[Math.floor(Math.random() * colors.length)];
-            if (playerChoice === winningColor) isWin = true;
-          } 
-          else if (gameName === 'dice') {
+            if (playerChoice === winningColor) {
+              isWin = true;
+              rewardEarned = (playerChoice === 'bleu') ? 60 : 15;
+            }
+          } else if (gameName === 'dice') {
             const sum = Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1;
-            const sumType = (sum % 2 === 0) ? 'pair' : 'impair';
-            if (playerChoice === sumType) isWin = true;
-          } 
-          else if (gameName === 'coin') {
-            const resultCoin = Math.random() > 0.5 ? 'pile' : 'face';
-            if (playerChoice === resultCoin) isWin = true;
-          }
-          else if (gameName === 'slot') {
+            if (playerChoice === (sum % 2 === 0 ? 'pair' : 'impair')) {
+              isWin = true;
+              rewardEarned = GAME_CONFIG.dice.reward;
+            }
+          } else if (gameName === 'coin') {
+            if (playerChoice === (Math.random() > 0.5 ? 'pile' : 'face')) {
+              isWin = true;
+              rewardEarned = GAME_CONFIG.coin.reward;
+            }
+          } else if (gameName === 'slot') {
             isWin = Math.random() < 0.33;
+            if (isWin) rewardEarned = GAME_CONFIG.slot.reward;
           }
 
-          // Les points montent UNIQUEMENT en cas de victoire
           if (isWin) {
             stats[gameName].wins += 1;
-            stats.score += 50; // +50 points par victoire
+            stats.score += rewardEarned;
           }
         }
-
         saveStats(stats);
-
-        setTimeout(() => {
-          game.classList.remove('stopping');
-          game.classList.add('paused-state');
-        }, 1000);
-
+        setTimeout(() => { game.classList.remove('stopping'); game.classList.add('paused-state'); }, 1000);
       } else {
-        // --- LANCEMENT ---
+        let cost = (gameName === 'wheel') ? 10 : GAME_CONFIG[gameName].cost;
+        if (stats.score < cost) {
+          alert("Plus assez de crédits ! Va jouer au Démineur en bas.");
+          return;
+        }
+        stats.score -= cost;
+        saveStats(stats);
         game.classList.remove('paused-state');
         game.classList.add('playing');
       }
     });
   });
+
+  // Démineur
+  const ROWS = 6, COLS = 12, MINES_COUNT = 12;
+  let board = [], gameOver = false, revealedCount = 0, halfReached = false;
+  const totalSafeCells = (ROWS * COLS) - MINES_COUNT;
+
+  function initMinesweeper() {
+    const gridEl = document.getElementById('mine-grid');
+    gridEl.innerHTML = '';
+    document.getElementById('mine-status').textContent = "+15 🪙 à 50% | +30 🪙 si fini !";
+    board = []; gameOver = false; revealedCount = 0; halfReached = false;
+
+    for (let r = 0; r < ROWS; r++) {
+      let row = [];
+      for (let c = 0; c < COLS; c++) row.push({ mine: false, revealed: false, count: 0 });
+      board.push(row);
+    }
+    let placed = 0;
+    while (placed < MINES_COUNT) {
+      let r = Math.floor(Math.random() * ROWS), c = Math.floor(Math.random() * COLS);
+      if (!board[r][c].mine) { board[r][c].mine = true; placed++; }
+    }
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (board[r][c].mine) continue;
+        let m = 0;
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            let nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc].mine) m++;
+          }
+        }
+        board[r][c].count = m;
+      }
+    }
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.createElement('button');
+        cell.className = 'mine-cell';
+        cell.dataset.row = r; cell.dataset.col = c;
+        cell.addEventListener('click', () => clickCell(r, c, cell));
+        gridEl.appendChild(cell);
+      }
+    }
+  }
+
+  function clickCell(r, c, cell) {
+    if (gameOver || board[r][c].revealed) return;
+    if (board[r][c].mine) {
+      gameOver = true;
+      cell.textContent = "💣"; cell.style.background = "#ff007f";
+      document.getElementById('mine-status').textContent = "BOUM ! Perdu.";
+      return;
+    }
+    revealRecursive(r, c);
+    checkWin();
+  }
+
+  function revealRecursive(r, c) {
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c].revealed || board[r][c].mine) return;
+    board[r][c].revealed = true; revealedCount++;
+    const cell = document.querySelector(`[data-row='${r}'][data-col='${c}']`);
+    cell.classList.add('revealed');
+    if (board[r][c].count > 0) {
+      cell.textContent = board[r][c].count;
+      cell.classList.add('c' + board[r][c].count);
+    } else {
+      cell.textContent = "";
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) revealRecursive(r + dr, c + dc);
+    }
+  }
+
+  function checkWin() {
+    let stats = getStats();
+    if (!halfReached && revealedCount >= Math.floor(totalSafeCells / 2)) {
+      halfReached = true; stats.score += 15; saveStats(stats);
+      document.getElementById('mine-status').textContent = "Moitié franchie ! +15 🪙";
+    }
+    if (revealedCount === totalSafeCells) {
+      gameOver = true; stats.score += 30; saveStats(stats);
+      document.getElementById('mine-status').textContent = "Victoire totale ! +30 🪙 🎉";
+    }
+  }
+
+  document.getElementById('reset-mines').addEventListener('click', initMinesweeper);
+  initMinesweeper();
 </script>
 
 </body>
-</html>
