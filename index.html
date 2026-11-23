@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Arcade</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Petits styles pour les boutons de choix */
+  .choices { margin-bottom: 0.8rem; }
+  .choices p { margin: 0 0 0.4rem; font-size: 0.85rem; }
+  .choice-btn {
+    background: #2a1055;
+    color: #fff;
+    border: 2px solid var(--pink);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 2px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    transition: 0.2s;
+  }
+  .choice-btn.selected {
+    background: var(--pink);
+    box-shadow: 0 0 8px var(--pink);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🕹️ Mini Arcade</h1>
+  <p class="sub">Fais ton pronostic, lance, puis arrête pour tenter de gagner des points !</p>
+  <div style="margin-top: 1rem;">
+    <span>Score : <strong id="global-score">0</strong> pts</span> | 
+    <a href="page2.html" style="color: var(--neon); text-decoration: underline;">Voir mes stats 📊</a>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- ================= MACHINE À SYMBOLES ================= -->
+  <section class="game" data-game="slot">
+    <h2>Machine à surprises</h2>
+    <div class="stage">
+      <div class="reels">
+        <div class="reel"><div class="strip s1 anim">
+          <span>🚀</span><span>👾</span><span>⭐</span><span>⚡</span><span>🔥</span><span>💎</span><span>🚀</span><span>👾</span>
+        </div></div>
+        <div class="reel"><div class="strip s2 anim">
+          <span>👾</span><span>⭐</span><span>💎</span><span>🚀</span><span>🔥</span><span>⚡</span><span>👾</span><span>⭐</span>
+        </div></div>
+        <div class="reel"><div class="strip s3 anim">
+          <span>⚡</span><span>🚀</span><span>👾</span><span>💎</span><span>⭐</span><span>🔥</span><span>⚡</span><span>🚀</span>
+        </div></div>
+      </div>
+    </div>
+    <button class="hold" type="button">🚀 LANCER / ARRÊTER</button>
+    <p class="hint">Aligne 3 symboles sur la ligne néon pour gagner !</p>
+  </section>
+
+  <!-- ================= ROUE DE LA FORTUNE ================= -->
+  <section class="game" data-game="wheel">
+    <h2>Roue de la fortune</h2>
+    <div class="stage">
+      <div class="wheel-wrap">
+        <div class="pointer"></div>
+        <div class="wheel anim">
+          <span class="n" style="--i:0">0</span>
+          <span class="n" style="--i:1">1</span>
+          <span class="n" style="--i:2">2</span>
+          <span class="n" style="--i:3">3</span>
+          <span class="n" style="--i:4">4</span>
+          <span class="n" style="--i:5">5</span>
+          <span class="n" style="--i:6">6</span>
+          <span class="n" style="--i:7">7</span>
+          <span class="n" style="--i:8">8</span>
+          <span class="n" style="--i:9">9</span>
+          <span class="n" style="--i:10">10</span>
+          <span class="n" style="--i:11">11</span>
+          <span class="n" style="--i:12">12</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="choices" data-game-choices="wheel">
+      <p>Choisis une couleur :</p>
+      <button type="button" class="choice-btn" data-val="bleu">Bleu</button>
+      <button type="button" class="choice-btn" data-val="violet">Violet</button>
+      <button type="button" class="choice-btn" data-val="noir">Noir</button>
+    </div>
+
+    <button class="hold" type="button">🎡 LANCER / ARRÊTER</button>
+    <p class="hint">Le numéro sous la flèche néon est ton score.</p>
+  </section>
+
+  <!-- ================= DÉS ================= -->
+  <section class="game" data-game="dice">
+    <h2>Dés</h2>
+    <div class="stage">
+      <div class="dice">
+        <div class="die"><div class="rx a1 anim"><div class="ry b1 anim">
+          <div class="face f1"></div><div class="face f2"></div><div class="face f3"></div>
+          <div class="face f4"></div><div class="face f5"></div><div class="face f6"></div>
+        </div></div></div>
+        <div class="die"><div class="rx a2 anim"><div class="ry b2 anim">
+          <div class="face f1"></div><div class="face f2"></div><div class="face f3"></div>
+          <div class="face f4"></div><div class="face f5"></div><div class="face f6"></div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <div class="choices" data-game-choices="dice">
+      <p>La somme sera :</p>
+      <button type="button" class="choice-btn" data-val="pair">Pair</button>
+      <button type="button" class="choice-btn" data-val="impair">Impair</button>
+    </div>
+
+    <button class="hold" type="button">🎲 LANCER / ARRÊTER</button>
+    <p class="hint">Additionne les deux faces du dessus.</p>
+  </section>
+
+  <!-- ================= PILE OU FACE ================= -->
+  <section class="game" data-game="coin">
+    <h2>Pile ou face</h2>
+    <div class="stage">
+      <div class="coin-stage">
+        <div class="coin anim">
+          <div class="side">PILE</div>
+          <div class="side verso">FACE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="choices" data-game-choices="coin">
+      <p>Ton pronostic :</p>
+      <button type="button" class="choice-btn" data-val="pile">Pile</button>
+      <button type="button" class="choice-btn" data-val="face">Face</button>
+    </div>
+
+    <button class="hold" type="button">🪙 LANCER / ARRÊTER</button>
+    <p class="hint">Clique à nouveau pour voir ton résultat.</p>
+  </section>
+
+</main>
+
+<footer>Mini-jeux HTML, CSS et JS.</footer>
+
+<script>
+  function getStats() {
+    let stats = JSON.parse(localStorage.getItem('arcade_stats'));
+    if (!stats) {
+      stats = {
+        score: 0,
+        wheel: { played: 0, wins: 0 },
+        slot: { played: 0, wins: 0 },
+        dice: { played: 0, wins: 0 },
+        coin: { played: 0, wins: 0 }
+      };
+    }
+    return stats;
+  }
+
+  function saveStats(stats) {
+    localStorage.setItem('arcade_stats', JSON.stringify(stats));
+    document.getElementById('global-score').textContent = stats.score;
+  }
+
+  document.getElementById('global-score').textContent = getStats().score;
+
+  // Gestion des sélections de choix pour chaque jeu
+  const userChoices = {};
+  document.querySelectorAll('.choices').forEach(container => {
+    const gameType = container.getAttribute('data-game-choices');
+    container.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        container.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        e.target.classList.add('selected');
+        userChoices[gameType] = e.target.getAttribute('data-val');
+      });
+    });
+  });
+
+  // Gestion des clics sur les jeux
+  document.querySelectorAll('.game').forEach(game => {
+    const button = game.querySelector('.hold');
+    const gameName = game.getAttribute('data-game');
+
+    button.addEventListener('click', () => {
+      if (game.classList.contains('stopping')) return;
+
+      if (game.classList.contains('playing')) {
+        // --- ARRÊT DU JEU ET VÉRIFICATION ---
+        game.classList.remove('playing');
+        game.classList.add('stopping');
+
+        let stats = getStats();
+        let playerChoice = userChoices[gameName];
+        let isWin = false;
+
+        if (!playerChoice && gameName !== 'slot') {
+          alert("N'oublie pas de faire ton choix avant d'arrêter le jeu !");
+        } else {
+          // On incrémente le nombre de parties jouées
+          stats[gameName].played += 1;
+
+          // Logique de résultat selon le jeu
+          if (gameName === 'wheel') {
+            const colors = ['bleu', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir', 'violet', 'noir'];
+            const winningColor = colors[Math.floor(Math.random() * colors.length)];
+            if (playerChoice === winningColor) isWin = true;
+          } 
+          else if (gameName === 'dice') {
+            const sum = Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1;
+            const sumType = (sum % 2 === 0) ? 'pair' : 'impair';
+            if (playerChoice === sumType) isWin = true;
+          } 
+          else if (gameName === 'coin') {
+            const resultCoin = Math.random() > 0.5 ? 'pile' : 'face';
+            if (playerChoice === resultCoin) isWin = true;
+          }
+          else if (gameName === 'slot') {
+            isWin = Math.random() < 0.33;
+          }
+
+          // Les points montent UNIQUEMENT en cas de victoire
+          if (isWin) {
+            stats[gameName].wins += 1;
+            stats.score += 50; // +50 points par victoire
+          }
+        }
+
+        saveStats(stats);
+
+        setTimeout(() => {
+          game.classList.remove('stopping');
+          game.classList.add('paused-state');
+        }, 1000);
+
+      } else {
+        // --- LANCEMENT ---
+        game.classList.remove('paused-state');
+        game.classList.add('playing');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
